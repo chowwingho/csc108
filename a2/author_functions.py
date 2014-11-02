@@ -1,8 +1,3 @@
-# need to figure out how to properly split sentences into phrases and account 
-# for internal punctuation. 
-
-
-
 ##########  Provided helper function. ############
 
 def clean_up(s):
