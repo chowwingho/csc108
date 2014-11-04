@@ -8,18 +8,12 @@ def get_valid_filename(msg):
     exist, keep re-prompting until they give a valid filename.
     Return the name of that file.
     """
-    
-    # To do: fill in this function's body to meet its specification.
-    
-    # Uncomment and use this statement as many times as needed for input:
-    # filename = input(msg)
 
-    # Uncomment and use this statement as many times as needed for output:
-    # print("That file does not exist.")
+    filename = input(msg)
+    while not os.path.isfile(filename):
+        print("That file does not exist.")
+        filename = input(msg)
     
-    # Besides what is given above, do not use print or input anywhere else
-    # in this function.
-
     return filename
     
     
@@ -32,16 +26,10 @@ def get_valid_directory_name(msg):
     Return the name of that directory.
     """
     
-    # To do: fill in this function's body to meet its specification.
-    
-    # Uncomment and use this statement as many times as needed for input:
-    # dirname = input(msg)
-
-    # Uncomment and use this statement as many times as needed for output:
-    # print("That directory does not exist.")
-
-    # Besides what is given above, do not use print or input anywhere else
-    # in this function.
+    dirname = input(msg)
+    while not os.path.isdir(dirname):
+        print("That directory does not exist.")
+        dirname = input(msg)   
 
     return dirname
 
