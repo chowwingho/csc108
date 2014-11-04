@@ -27,7 +27,6 @@ def avg_word_length(text):
     text contains at least one word.
 
     Return the average length of all words in text. 
-    
     >>> avg_word_length(['apple pear!\n'])
     4.5
     >>> avg_word_length(['apple\n', 'orange\n'])
@@ -37,7 +36,7 @@ def avg_word_length(text):
     text = wordify_list(text)
   
     for i in range(len(text)):
-        text[i] =  len(text[i])
+        text[i] = len(text[i])
         
     return sum(text) / len(text)
 
@@ -55,6 +54,7 @@ def type_token_ratio(text):
     >>>type_token_ratio(['apple', 'apple', 'banana, pear\n'])
     0.75
     """
+    
     words = wordify_list(text)
     unique_words = uniqueify_list(words)
     
@@ -112,16 +112,6 @@ def avg_sentence_length(text):
     end of file. Terminating punctuation is defined as !?.
 
     Return the average number of words per sentence in text.   
-
-    >>> text = ['The time has come, the Walrus said\n',
-         'To talk of many things: of shoes - and ships - and sealing wax,\n',
-         'Of cabbages; and kings.\n',
-         'And why the sea is boiling hot;\n',
-         'and whether pigs have wings.\n']
-    >>> avg_sentence_length(text)
-    17.5    
-    
-    
     
     >>> avg_sentence_length(['The apple is good.'])
     4.0
@@ -151,23 +141,21 @@ def avg_sentence_complexity(text):
     Phrases are substrings of sentences, separated by one or more of ,;:
 
     Return the average number of phrases per sentence in text.
-
-    >>> text = ['The time has come, the Walrus said\n',
-         'To talk of many things: of shoes - and ships - and sealing wax,\n',
-         'Of cabbages; and kings.\n',
-         'And why the sea is boiling hot;\n',
-         'and whether pigs have wings.\n']
+    
+    >>> text = ['The apple is good.', 'I like apples, pears, and bananas.']
     >>> avg_sentence_complexity(text)
-    3.5
+    2.0
     """
+
+    for i in range(len(text)):
+        text[i] = text[i].strip()
     
-    # To do: Fill in this function's body to meet its specification.
-    # same as above, only once each sentence is split from the text, split it
-    # further into the number of phrases in each sentence, rather than the 
-    # number of words. Then generate a second list that is made of numbers 
-    # corresponding to the number of phrases in each sentence in the previous
-    # list. Then find the average of those numbers. 
+    file_as_str = ' '.join(text)
+    sentences = split_on_separators(file_as_str, '!?.')    
     
+    phrases = phraseify_sentence(sentences)
+    
+    return len(phrases) / len(sentences)
     
 def compare_signatures(sig1, sig2, weight):
     """ (list, list, list of float) -> float
@@ -194,14 +182,14 @@ def compare_signatures(sig1, sig2, weight):
     12.000000000000007
     """
     
-    # To do: Fill in this function's body to meet its specification.
+    value = 0
     
-    # need to see what the math is for this question - doesn't seem too 
-    # logically difficult 
+    for i in range(1, len(sig1)):
+        value += (abs(sig1[i] - sig2[i]) * weight[i])
+
+    return value
   
   ################# Helper Functions #################
-  
-  
     
 def flatten_list(l):
     """ (list) -> list
@@ -248,6 +236,8 @@ def wordify_list(l):
     []
     >>> wordify_list(['a', 'b, c\n'])
     ['a', 'b', 'c']
+    >>> wordify_list(['apples - pears'])
+    ['apples', 'pears']
     '''
     
     words = []
@@ -258,7 +248,7 @@ def wordify_list(l):
     for i in range(len(words)):
         words[i] = clean_up(words[i])
     
-    return words
+    return [item for item in words if (item != "" and not item.isspace())] 
 
 def strict_uniqueify_list(l):
     '''
@@ -282,8 +272,42 @@ def strict_uniqueify_list(l):
     
     return strict_unique_list   
     
+def phraseify_sentence(l):
+    '''
+    (list) -> list
+    
+    Return a list of phrases that occur in l. Phrases are strings ending in
+    ',;:'.
+    
+    >>> phraseify_sentence(['The apple is good', ' I like apples, pears, and bananas'])
+    ['The apple is good', ' I like apples', ' pears', ' and bananas']
+    '''
+    
+    sentence_as_str = ''
+    phrases = []
+    for i in range(len(l)): 
+    
+        phrases.append(split_on_separators(str(l[i]), ',;:'))
+    phrases = flatten_list(phrases)
+    
+    return phrases
+
+def filter_blank(l):
+    '''
+    (list) -> list
+    
+    Return a list l without empty strings or strings containing only spaces.
+    
+    >>> filter_blank([])
+    []
+    >>> filter_blank(['a', 'b', ' ', '', '\n', 'c'])
+    ['a', 'b', 'c']
+    '''
+    
+    return [item for item in l if (item != "" and not item.isspace())] 
 
 if __name__ == '__main__':
+    
     # tests for flatten_list
     assert flatten_list([]) == []
     assert flatten_list(['a', 'b']) == ['a', 'b']
@@ -304,9 +328,14 @@ if __name__ == '__main__':
     assert uniqueify_list([]) == []
     assert uniqueify_list(['a', 'a', 'b', 'c']) == ['a', 'b', 'c']
     
+    # tests for filter_blank
+    assert filter_blank([]) == []
+    assert filter_blank(['a', 'b', ' ', '', '\n', 'c']) == ['a', 'b', 'c']
+    
     # tests for wordify_list
     assert wordify_list([]) == []
-    assert wordify_list(['a', 'b, c\n']) == ['a', 'b', 'c']    
+    assert wordify_list(['a', 'b, c\n']) == ['a', 'b', 'c']
+    assert wordify_list(['apples - pears']) == ['apples', 'pears']
     
     # tests for type_token_ratio
     assert type_token_ratio(['apple']) == 1.0
@@ -325,3 +354,14 @@ if __name__ == '__main__':
     assert avg_sentence_length(['The apple is good.']) == 4.0
     assert avg_sentence_length(['The apple is good.', 'I like apples, ' + \
                                 'pears, and bananas!\n']) == 5.0    
+   
+    # tests for phraseify_sentence
+    assert phraseify_sentence(['The apple is good', ' I like apples, pears, and bananas']) == ['The apple is good', ' I like apples', ' pears', ' and bananas']
+   
+    # tests for avg_sentence_complexity
+    assert avg_sentence_complexity(['The apple is good.', 'I like apples, pears, and bananas.']) == 2.0    
+    
+    
+    # tests for compare_signatures
+    assert compare_signatures(['apple', 4.4, 0.1, 0.05, 10.0, 2.0], ['pear', 4.3, 0.1, 0.04, 16.0, 4.0], ['banana', 11.0, 33.0, 50.0, 0.4, 4.0]) == 12.000000000000007
+  
